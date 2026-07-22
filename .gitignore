@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Personal financial data — never commit real records.
+data/*.csv
+data/*.json

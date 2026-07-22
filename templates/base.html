@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}記帳{% endblock %} - 記帳系統</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+{% if session.get('logged_in') %}
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="{{ url_for('dashboard') }}">記帳系統</a>
+    <nav class="nav">
+      <a href="{{ url_for('dashboard') }}">總覽</a>
+      <a href="{{ url_for('mode_entries', mode='personal') }}">個人</a>
+      <a href="{{ url_for('mode_entries', mode='work') }}">工作</a>
+      <a href="{{ url_for('mode_entries', mode='travel') }}">旅遊</a>
+      <a href="{{ url_for('stock') }}">股票</a>
+      <a href="{{ url_for('accounts') }}">帳戶</a>
+      <a href="{{ url_for('settings_view') }}">設定</a>
+    </nav>
+    <form action="{{ url_for('logout') }}" method="post" class="logout-form">
+      <button type="submit" class="link-button">登出</button>
+    </form>
+  </div>
+</header>
+{% endif %}
+<main class="container">
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

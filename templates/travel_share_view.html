@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ destination }} 分帳結果{% endblock %}
+{% block content %}
+<h1>{{ destination }} — 分帳結果</h1>
+<p class="hint">此頁面為唯讀分享頁，資料會隨記帳更新即時同步，無需登入。</p>
+
+<section class="card">
+  <h2>每人淨結餘</h2>
+  <table>
+    <thead><tr><th>人</th><th class="amount">淨結餘(TWD)</th></tr></thead>
+    <tbody>
+      {% for name, amount in balances.items() %}
+      <tr>
+        <td>{{ name }}</td>
+        <td class="amount {{ 'positive' if amount > 0 else 'negative' if amount < 0 else '' }}">{{ "{:,.2f}".format(amount) }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="2">尚無資料</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="hint">正數＝應收（多付了），負數＝應付（欠款）</p>
+</section>
+
+<section class="card">
+  <h2>建議還款方式</h2>
+  {% if transactions %}
+  <ul class="settlement-list">
+    {% for debtor, creditor, amount in transactions %}
+    <li>{{ debtor }} → {{ creditor }}：NT$ {{ "{:,.2f}".format(amount) }}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>目前帳目已平衡，不需要轉帳。</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>消費明細</h2>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>日期</th><th>類別</th><th>項目</th><th class="amount">金額</th><th>付款人</th><th>分攤對象</th></tr></thead>
+    <tbody>
+      {% for row in trip_rows %}
+      <tr>
+        <td>{{ row['日期'] }}</td>
+        <td>{{ row['類別'] }}</td>
+        <td>{{ row['項目'] }}</td>
+        <td class="amount">{{ row['金額'] }} {{ row['幣別'] }}</td>
+        <td>{{ row['付款人'] }}</td>
+        <td>{{ row['分攤對象'] }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6">尚無消費紀錄</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+{% endblock %}

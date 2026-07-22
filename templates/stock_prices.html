@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}股票市價{% endblock %}
+{% block content %}
+<h1>目前市價維護</h1>
+<p class="actions"><a class="btn-secondary" href="{{ url_for('stock') }}">回股票交易</a></p>
+
+<section class="card">
+  <h2>更新／新增市價</h2>
+  <form method="post" action="{{ url_for('stock_prices') }}" class="entry-form">
+    <label>股票代號
+      <input type="text" name="股票代號" list="known-symbols" required>
+    </label>
+    <datalist id="known-symbols">
+      {% for symbol in holdings.keys() %}
+      <option value="{{ symbol }}"></option>
+      {% endfor %}
+    </datalist>
+    <label>目前市價
+      <input type="number" step="0.0001" name="目前市價" required>
+    </label>
+    <label>幣別
+      <input type="text" name="幣別" value="TWD">
+    </label>
+    <label>匯率
+      <input type="number" step="0.0001" name="匯率" value="1">
+    </label>
+    <button type="submit" class="btn">儲存</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>市價清單</h2>
+  <table>
+    <thead><tr><th>股票代號</th><th class="amount">目前市價</th><th>幣別</th><th>匯率</th><th>更新日期</th></tr></thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>{{ row['股票代號'] }}</td>
+        <td class="amount">{{ row['目前市價'] }}</td>
+        <td>{{ row['幣別'] }}</td>
+        <td>{{ row['匯率'] }}</td>
+        <td>{{ row['更新日期'] }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5">尚無市價資料</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>記帳報表</title>
+<style>
+  body {
+    font-family: "Helvetica Neue", Arial, "Microsoft JhengHei", sans-serif;
+    background: #f5f6fa;
+    color: #2d3436;
+    margin: 0;
+    padding: 40px 20px;
+  }
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    padding: 32px;
+  }
+  h1 {
+    text-align: center;
+    margin-top: 0;
+    color: #2d3436;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 24px;
+  }
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #eaeaea;
+  }
+  th {
+    background: #6c5ce7;
+    color: #ffffff;
+    font-weight: 600;
+  }
+  tr:nth-child(even) {
+    background: #f9f9fc;
+  }
+  tr:hover {
+    background: #f0eefc;
+  }
+  td.amount {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  tfoot td {
+    font-weight: 700;
+    border-top: 2px solid #6c5ce7;
+    border-bottom: none;
+  }
+  .summary {
+    margin-top: 16px;
+    text-align: right;
+    color: #636e72;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>記帳報表</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>日期</th>
+          <th>類別</th>
+          <th>支出項目</th>
+          <th>金額</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>7/7</td>
+          <td>午餐</td>
+          <td>雞肉飯</td>
+          <td class="amount">120</td>
+        </tr>
+        <tr>
+          <td>7/8</td>
+          <td>飲料</td>
+          <td>咖啡</td>
+          <td class="amount">65</td>
+        </tr>
+        <tr>
+          <td>7/10</td>
+          <td>交通</td>
+          <td>計程車</td>
+          <td class="amount">250</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3">總計</td>
+          <td class="amount">435</td>
+        </tr>
+      </tfoot>
+    </table>
+    <div class="summary">共 3 筆紀錄</div>
+  </div>
+</body>
+</html>

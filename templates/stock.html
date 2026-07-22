@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}股票{% endblock %}
+{% block content %}
+{% set is_edit = edit_row is defined and edit_row %}
+{% set values = edit_row if is_edit else {} %}
+<h1>股票模式</h1>
+<p class="actions"><a class="btn-secondary" href="{{ url_for('stock_prices') }}">管理目前市價</a></p>
+
+<section class="card">
+  <h2>{{ "編輯交易" if is_edit else "新增買賣交易" }}</h2>
+  <form method="post" action="{{ url_for('stock_edit', row_id=edit_row.id) if is_edit else url_for('stock') }}" class="entry-form">
+    <label>日期
+      <input type="date" name="日期" value="{{ values.get('日期') or today }}" required>
+    </label>
+    <label>股票代號
+      <input type="text" name="股票代號" value="{{ values.get('股票代號', '') }}" required>
+    </label>
+    <label>交易類型
+      <select name="交易類型">
+        <option value="買" {% if values.get('交易類型') == '買' %}selected{% endif %}>買</option>
+        <option value="賣" {% if values.get('交易類型') == '賣' %}selected{% endif %}>賣</option>
+      </select>
+    </label>
+    <label>股數
+      <input type="number" step="0.0001" name="股數" value="{{ values.get('股數', '') }}" required>
+    </label>
+    <label>單價
+      <input type="number" step="0.0001" name="單價" value="{{ values.get('單價', '') }}" required>
+    </label>
+    <label>手續費
+      <input type="number" step="0.01" name="手續費" value="{{ values.get('手續費') or '0' }}">
+    </label>
+    <label>幣別
+      <input type="text" name="幣別" value="{{ values.get('幣別') or 'TWD' }}">
+    </label>
+    <label>匯率
+      <input type="number" step="0.0001" name="匯率" value="{{ values.get('匯率') or '1' }}">
+    </label>
+    <label>付款方式
+      <select name="付款方式">
+        <option value="">（未指定）</option>
+        {% for a in accounts %}
+        <option value="{{ a['帳戶名稱'] }}" {% if values.get('付款方式') == a['帳戶名稱'] %}selected{% endif %}>{{ a['帳戶名稱'] }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>備註（選填）
+      <input type="text" name="備註" value="{{ values.get('備註', '') }}">
+    </label>
+    <button type="submit" class="btn">{{ "儲存修改" if is_edit else "新增" }}</button>
+  </form>
+</section>
+
+{% if not is_edit %}
+<section class="card">
+  <h2>目前持股</h2>
+  <table>
+    <thead><tr><th>股票代號</th><th class="amount">持有股數</th></tr></thead>
+    <tbody>
+      {% for symbol, qty in holdings.items() %}
+      <tr><td>{{ symbol }}</td><td class="amount">{{ qty }}</td></tr>
+      {% else %}
+      <tr><td colspan="2">尚無持股</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2>交易紀錄</h2>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>日期</th><th>代號</th><th>類型</th><th class="amount">股數</th><th class="amount">單價</th><th>手續費</th><th>幣別</th><th>付款方式</th><th>備註</th><th></th></tr></thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>{{ row['日期'] }}</td>
+        <td>{{ row['股票代號'] }}</td>
+        <td>{{ row['交易類型'] }}</td>
+        <td class="amount">{{ row['股數'] }}</td>
+        <td class="amount">{{ row['單價'] }}</td>
+        <td>{{ row['手續費'] }}</td>
+        <td>{{ row['幣別'] }}</td>
+        <td>{{ row['付款方式'] }}</td>
+        <td>{{ row['備註'] }}</td>
+        <td class="row-actions">
+          <a href="{{ url_for('stock_edit', row_id=row.id) }}">編輯</a>
+          <form method="post" action="{{ url_for('stock_delete', row_id=row.id) }}" onsubmit="return confirm('確定刪除這筆交易？');">
+            <button type="submit" class="link-button">刪除</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="10">尚無交易紀錄</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

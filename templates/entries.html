@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}{{ cfg.label }}{% endblock %}
+{% block content %}
+{% set is_edit = edit_row is defined and edit_row %}
+{% set values = edit_row if is_edit else {} %}
+<h1>{{ cfg.label }}記帳</h1>
+
+{% if not is_edit %}
+<p class="actions">
+  <a class="btn-secondary" href="{{ url_for('mode_batch', mode=mode) }}">切換到單日批次記帳</a>
+  {% if mode == 'travel' %}
+  <a class="btn-secondary" href="{{ url_for('travel_settlement') }}">前往分帳結算</a>
+  {% endif %}
+</p>
+{% endif %}
+
+<section class="card">
+  <h2>{{ "編輯紀錄" if is_edit else "新增一筆" }}</h2>
+  <form method="post" action="{{ url_for('mode_edit', mode=mode, row_id=edit_row.id) if is_edit else url_for('mode_entries', mode=mode) }}" class="entry-form">
+    {% if cfg.has_destination %}
+    <label>目的地
+      <input type="text" name="目的地" value="{{ values.get('目的地', '') }}" placeholder="例如：2026東京" required>
+    </label>
+    {% endif %}
+    <label>日期
+      <input type="date" name="日期" value="{{ values.get('日期') or today }}" required>
+    </label>
+    <label>類別
+      <input type="text" name="類別" value="{{ values.get('類別', '') }}" required>
+    </label>
+    <label>項目
+      <input type="text" name="項目" value="{{ values.get('項目', '') }}" required>
+    </label>
+    <label>金額
+      <input type="number" step="0.01" name="金額" value="{{ values.get('金額', '') }}" required>
+    </label>
+    <label>幣別
+      <input type="text" name="幣別" value="{{ values.get('幣別') or 'TWD' }}">
+    </label>
+    <label>匯率
+      <input type="number" step="0.0001" name="匯率" value="{{ values.get('匯率') or '1' }}">
+    </label>
+    <label>付款人
+      <input type="text" name="付款人" value="{{ values.get('付款人') or settings.get('預設付款人', '') }}">
+    </label>
+    <label>付款方式
+      <select name="付款方式">
+        <option value="">（未指定）</option>
+        {% for a in accounts %}
+        <option value="{{ a['帳戶名稱'] }}" {% if (values.get('付款方式') or settings.get('預設付款方式','')) == a['帳戶名稱'] %}selected{% endif %}>{{ a['帳戶名稱'] }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>地點（選填）
+      <input type="text" name="地點" value="{{ values.get('地點', '') }}">
+    </label>
+    {% if cfg.has_shares %}
+    <label>分攤對象（選填）
+      <input type="text" name="分攤對象" value="{{ values.get('分攤對象', '') }}" placeholder="Alice,Bob 或 Alice:2,Bob:1，留空表示只算付款人自己">
+    </label>
+    {% endif %}
+    <label>備註（選填）
+      <input type="text" name="備註" value="{{ values.get('備註', '') }}">
+    </label>
+    <button type="submit" class="btn">{{ "儲存修改" if is_edit else "新增" }}</button>
+  </form>
+</section>
+
+{% if not is_edit %}
+<section class="card">
+  <h2>紀錄列表</h2>
+  <div class="table-scroll">
+  <table>
+    <thead>
+      <tr>
+        {% if cfg.has_destination %}<th>目的地</th>{% endif %}
+        <th>日期</th><th>類別</th><th>項目</th><th class="amount">金額</th><th>幣別</th>
+        <th>付款人</th><th>付款方式</th><th>地點</th>
+        {% if cfg.has_shares %}<th>分攤對象</th>{% endif %}
+        <th>備註</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        {% if cfg.has_destination %}<td>{{ row['目的地'] }}</td>{% endif %}
+        <td>{{ row['日期'] }}</td>
+        <td>{{ row['類別'] }}</td>
+        <td>{{ row['項目'] }}</td>
+        <td class="amount">{{ row['金額'] }}</td>
+        <td>{{ row['幣別'] }}</td>
+        <td>{{ row['付款人'] }}</td>
+        <td>{{ row['付款方式'] }}</td>
+        <td>{{ row['地點'] }}</td>
+        {% if cfg.has_shares %}<td>{{ row['分攤對象'] }}</td>{% endif %}
+        <td>{{ row['備註'] }}</td>
+        <td class="row-actions">
+          <a href="{{ url_for('mode_edit', mode=mode, row_id=row.id) }}">編輯</a>
+          <form method="post" action="{{ url_for('mode_delete', mode=mode, row_id=row.id) }}" onsubmit="return confirm('確定刪除這筆紀錄？');">
+            <button type="submit" class="link-button">刪除</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="12">尚無紀錄</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

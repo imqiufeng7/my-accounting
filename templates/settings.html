@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}設定{% endblock %}
+{% block content %}
+<h1>設定</h1>
+<p class="hint">這裡設定的預設值，會自動帶入新增記帳表單的「付款人」與「付款方式」欄位（日期一律預設為今天），可在表單上臨時修改。</p>
+
+<section class="card">
+  <form method="post" action="{{ url_for('settings_view') }}" class="entry-form">
+    <label>預設付款人
+      <input type="text" name="預設付款人" value="{{ settings.get('預設付款人', '') }}">
+    </label>
+    <label>預設付款方式
+      <select name="預設付款方式">
+        <option value="">（未指定）</option>
+        {% for a in accounts %}
+        <option value="{{ a['帳戶名稱'] }}" {% if settings.get('預設付款方式') == a['帳戶名稱'] %}selected{% endif %}>{{ a['帳戶名稱'] }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <button type="submit" class="btn">儲存設定</button>
+  </form>
+</section>
+{% endblock %}

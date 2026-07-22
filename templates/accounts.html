@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}帳戶{% endblock %}
+{% block content %}
+<h1>帳戶管理</h1>
+<p class="hint">「付款方式」下拉選單的選項來自這裡；期初餘額＋期初日期是用來核對總資產的校正基準點，對完銀行 App 後可以隨時回來更新。</p>
+
+<section class="card">
+  <h2>新增／更新帳戶</h2>
+  <form method="post" action="{{ url_for('accounts') }}" class="entry-form">
+    <label>帳戶名稱
+      <input type="text" name="帳戶名稱" required>
+    </label>
+    <label>類型
+      <select name="類型">
+        <option value="現金">現金</option>
+        <option value="銀行帳戶">銀行帳戶</option>
+        <option value="信用卡">信用卡</option>
+        <option value="其他">其他</option>
+      </select>
+    </label>
+    <label>期初餘額
+      <input type="number" step="0.01" name="期初餘額" required>
+    </label>
+    <label>幣別
+      <input type="text" name="幣別" value="TWD">
+    </label>
+    <label>匯率
+      <input type="number" step="0.0001" name="匯率" value="1">
+    </label>
+    <label>期初日期
+      <input type="date" name="期初日期" value="{{ today }}" required>
+    </label>
+    <label>備註（選填）
+      <input type="text" name="備註">
+    </label>
+    <button type="submit" class="btn">儲存（同名帳戶會覆蓋更新）</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>帳戶列表</h2>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>帳戶名稱</th><th>類型</th><th class="amount">期初餘額</th><th>期初日期</th><th class="amount">目前餘額(TWD)</th><th>備註</th><th></th></tr></thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>{{ row['帳戶名稱'] }}</td>
+        <td>{{ row['類型'] }}</td>
+        <td class="amount">{{ row['期初餘額'] }} {{ row['幣別'] }}</td>
+        <td>{{ row['期初日期'] }}</td>
+        <td class="amount">{{ "{:,.0f}".format(balances_by_name.get(row['帳戶名稱'], 0)) }}</td>
+        <td>{{ row['備註'] }}</td>
+        <td class="row-actions">
+          <form method="post" action="{{ url_for('account_delete', name=row['帳戶名稱']) }}" onsubmit="return confirm('確定刪除這個帳戶？');">
+            <button type="submit" class="link-button">刪除</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7">尚無帳戶，請先新增一個</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+{% endblock %}

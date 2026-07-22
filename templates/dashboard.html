@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}總覽{% endblock %}
+{% block content %}
+<h1>總覽</h1>
+
+<section class="card">
+  <h2>總資產</h2>
+  <p class="big-number">NT$ {{ "{:,.0f}".format(net_worth.grand_total) }}</p>
+  <div class="grid-2">
+    <div>
+      <h3>帳戶餘額（合計 NT$ {{ "{:,.0f}".format(net_worth.account_total) }}）</h3>
+      <table>
+        <thead><tr><th>帳戶</th><th>類型</th><th class="amount">餘額</th></tr></thead>
+        <tbody>
+          {% for a in net_worth.accounts %}
+          <tr><td>{{ a.name }}</td><td>{{ a.type }}</td><td class="amount">{{ "{:,.0f}".format(a.balance_twd) }}</td></tr>
+          {% else %}
+          <tr><td colspan="3">尚未建立帳戶，<a href="{{ url_for('accounts') }}">前往設定</a></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3>股票市值（合計 NT$ {{ "{:,.0f}".format(net_worth.stock_total) }}）</h3>
+      <table>
+        <thead><tr><th>代號</th><th>股數</th><th class="amount">市值</th></tr></thead>
+        <tbody>
+          {% for s in net_worth.stocks %}
+          <tr><td>{{ s.symbol }}</td><td>{{ s.shares }}</td><td class="amount">{{ "{:,.0f}".format(s.value_twd) }}</td></tr>
+          {% else %}
+          <tr><td colspan="3">尚無持股</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>各模式支出合計</h2>
+  <table>
+    <thead><tr><th>模式</th><th class="amount">合計 (TWD)</th></tr></thead>
+    <tbody>
+      {% for mode_label, total in totals.items() %}
+      <tr><td>{{ mode_label }}</td><td class="amount">{{ "{:,.0f}".format(total) }}</td></tr>
+      {% else %}
+      <tr><td colspan="2">尚無資料</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2>最近紀錄</h2>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>日期</th><th>模式</th><th>類別</th><th>項目</th><th class="amount">金額(TWD)</th><th>付款人</th><th>付款方式</th></tr></thead>
+    <tbody>
+      {% for row in ledger_rows %}
+      <tr>
+        <td>{{ row["日期"] }}</td>
+        <td>{{ row["模式"] }}</td>
+        <td>{{ row["類別"] }}</td>
+        <td>{{ row["項目"] }}</td>
+        <td class="amount">{{ "{:,.0f}".format(row.amount_twd) }}</td>
+        <td>{{ row["付款人"] }}</td>
+        <td>{{ row["付款方式"] }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7">尚無紀錄</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+{% endblock %}

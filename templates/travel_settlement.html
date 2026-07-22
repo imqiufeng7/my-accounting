@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}旅遊分帳{% endblock %}
+{% block content %}
+<h1>旅遊分帳結算</h1>
+<p class="actions"><a class="btn-secondary" href="{{ url_for('mode_entries', mode='travel') }}">回旅遊記帳</a></p>
+
+<section class="card">
+  <form method="get" action="{{ url_for('travel_settlement') }}" class="entry-form">
+    <label>選擇旅程（目的地）
+      <select name="目的地" onchange="this.form.submit()">
+        {% for d in destinations %}
+        <option value="{{ d }}" {% if d == destination %}selected{% endif %}>{{ d }}</option>
+        {% endfor %}
+      </select>
+    </label>
+  </form>
+</section>
+
+{% if destination %}
+<section class="card">
+  <h2>{{ destination }} — 每人淨結餘</h2>
+  <table>
+    <thead><tr><th>人</th><th class="amount">淨結餘(TWD)</th></tr></thead>
+    <tbody>
+      {% for name, amount in balances.items() %}
+      <tr>
+        <td>{{ name }}</td>
+        <td class="amount {{ 'positive' if amount > 0 else 'negative' if amount < 0 else '' }}">{{ "{:,.2f}".format(amount) }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="2">此旅程尚無資料</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="hint">正數＝應收（多付了），負數＝應付（欠款）</p>
+</section>
+
+<section class="card">
+  <h2>建議還款方式（最少轉帳次數）</h2>
+  {% if transactions %}
+  <ul class="settlement-list">
+    {% for debtor, creditor, amount in transactions %}
+    <li>{{ debtor }} → {{ creditor }}：NT$ {{ "{:,.2f}".format(amount) }}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>目前帳目已平衡，不需要轉帳。</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>分享給同行朋友</h2>
+  <p class="hint">產生一個不需登入密碼的連結，朋友點開即可看到即時（非凍結快照）的分帳結果。</p>
+  <form method="post" action="{{ url_for('travel_settlement') }}">
+    <input type="hidden" name="action" value="share">
+    <input type="hidden" name="目的地" value="{{ destination }}">
+    <button type="submit" class="btn">產生／取得分享連結</button>
+  </form>
+  {% if share_url %}
+  <p class="share-url"><input type="text" readonly value="{{ share_url }}" onclick="this.select()"></p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>此旅程明細</h2>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>日期</th><th>類別</th><th>項目</th><th class="amount">金額</th><th>付款人</th><th>分攤對象</th></tr></thead>
+    <tbody>
+      {% for row in trip_rows %}
+      <tr>
+        <td>{{ row['日期'] }}</td>
+        <td>{{ row['類別'] }}</td>
+        <td>{{ row['項目'] }}</td>
+        <td class="amount">{{ row['金額'] }} {{ row['幣別'] }}</td>
+        <td>{{ row['付款人'] }}</td>
+        <td>{{ row['分攤對象'] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+{% else %}
+<p>尚無旅遊紀錄，先到「旅遊」頁面新增支出。</p>
+{% endif %}
+{% endblock %}

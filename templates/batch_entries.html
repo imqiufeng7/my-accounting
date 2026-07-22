@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ cfg.label }}單日批次記帳{% endblock %}
+{% block content %}
+<h1>{{ cfg.label }}單日批次記帳</h1>
+<p class="hint">先填一次共用資訊，下面可以新增多列「項目＋金額」，一次送出。</p>
+<p class="actions">
+  <a class="btn-secondary" href="{{ url_for('mode_entries', mode=mode) }}">切換到單筆記帳</a>
+</p>
+
+<section class="card">
+  <form method="post" action="{{ url_for('mode_batch', mode=mode) }}" class="entry-form">
+    {% if cfg.has_destination %}
+    <label>目的地
+      <input type="text" name="目的地" placeholder="例如：2026東京" required>
+    </label>
+    {% endif %}
+    <label>日期
+      <input type="date" name="日期" value="{{ today }}" required>
+    </label>
+    <label>類別
+      <input type="text" name="類別" required>
+    </label>
+    <label>幣別
+      <input type="text" name="幣別" value="TWD">
+    </label>
+    <label>匯率
+      <input type="number" step="0.0001" name="匯率" value="1">
+    </label>
+    <label>付款人
+      <input type="text" name="付款人" value="{{ settings.get('預設付款人', '') }}">
+    </label>
+    <label>付款方式
+      <select name="付款方式">
+        <option value="">（未指定）</option>
+        {% for a in accounts %}
+        <option value="{{ a['帳戶名稱'] }}" {% if settings.get('預設付款方式','') == a['帳戶名稱'] %}selected{% endif %}>{{ a['帳戶名稱'] }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>地點（選填）
+      <input type="text" name="地點">
+    </label>
+    {% if cfg.has_shares %}
+    <label>分攤對象（選填，套用到本次全部項目）
+      <input type="text" name="分攤對象" placeholder="Alice,Bob 或 Alice:2,Bob:1">
+    </label>
+    {% endif %}
+    <label>備註（選填）
+      <input type="text" name="備註">
+    </label>
+
+    <h3>項目清單</h3>
+    <div id="batch-rows">
+      <div class="batch-row">
+        <input type="text" name="項目[]" placeholder="項目" required>
+        <input type="number" step="0.01" name="金額[]" placeholder="金額" required>
+        <button type="button" class="link-button remove-row">移除</button>
+      </div>
+    </div>
+    <button type="button" id="add-row" class="btn-secondary">＋ 新增一列</button>
+
+    <button type="submit" class="btn">全部送出</button>
+  </form>
+</section>
+
+<template id="batch-row-template">
+  <div class="batch-row">
+    <input type="text" name="項目[]" placeholder="項目" required>
+    <input type="number" step="0.01" name="金額[]" placeholder="金額" required>
+    <button type="button" class="link-button remove-row">移除</button>
+  </div>
+</template>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% endblock %}

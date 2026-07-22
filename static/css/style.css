@@ -1,0 +1,238 @@
+:root {
+  --purple: #6c5ce7;
+  --purple-dark: #5a4bd6;
+  --bg: #f5f6fa;
+  --card-bg: #ffffff;
+  --text: #2d3436;
+  --muted: #636e72;
+  --border: #eaeaea;
+  --danger: #d63031;
+  --positive: #00b894;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: "Helvetica Neue", Arial, "Microsoft JhengHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  margin: 0;
+}
+
+.topbar {
+  background: var(--purple);
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+
+.nav {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.nav a {
+  color: #fff;
+  text-decoration: none;
+  opacity: 0.9;
+  padding: 4px 0;
+}
+
+.nav a:hover { opacity: 1; text-decoration: underline; }
+
+.logout-form { margin-left: auto; }
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 20px 16px 60px;
+}
+
+h1 { margin-top: 0; }
+
+.card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 640px) {
+  .grid-2 { grid-template-columns: 1fr; }
+  .topbar-inner { flex-direction: column; align-items: flex-start; }
+  .logout-form { margin-left: 0; }
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  background: var(--purple);
+  color: #fff;
+}
+
+tr:nth-child(even) { background: #f9f9fc; }
+
+td.amount, th.amount { text-align: right; font-variant-numeric: tabular-nums; }
+
+.table-scroll { overflow-x: auto; }
+
+.big-number {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--purple-dark);
+  margin: 4px 0 16px;
+}
+
+.positive { color: var(--positive); }
+.negative { color: var(--danger); }
+
+.entry-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px 20px;
+}
+
+@media (max-width: 640px) {
+  .entry-form { grid-template-columns: 1fr; }
+}
+
+.entry-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+input, select, button {
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+input, select {
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-height: 44px;
+}
+
+.entry-form > button.btn {
+  grid-column: 1 / -1;
+}
+
+.btn {
+  background: var(--purple);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.btn:hover { background: var(--purple-dark); }
+
+.btn-secondary {
+  display: inline-block;
+  background: #fff;
+  color: var(--purple);
+  border: 1px solid var(--purple);
+  border-radius: 8px;
+  padding: 10px 16px;
+  text-decoration: none;
+  min-height: 44px;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: var(--danger);
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  font-size: 0.9rem;
+}
+
+.row-actions { display: flex; gap: 10px; align-items: center; white-space: nowrap; }
+
+.actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.hint { color: var(--muted); font-size: 0.9rem; }
+
+.error { color: var(--danger); }
+
+.login-card { max-width: 360px; margin: 60px auto; text-align: center; }
+.login-card form { display: flex; flex-direction: column; gap: 14px; margin-top: 16px; }
+
+.settlement-list { list-style: none; padding: 0; }
+.settlement-list li {
+  padding: 10px 14px;
+  background: #f0eefc;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.share-url input {
+  width: 100%;
+}
+
+.batch-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr auto;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 640px) {
+  .batch-row { grid-template-columns: 1fr; }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1c22;
+    --card-bg: #26262e;
+    --text: #f1f1f5;
+    --muted: #a0a0ab;
+    --border: #3a3a44;
+  }
+  tr:nth-child(even) { background: #2c2c36; }
+  input, select { background: #1c1c22; color: var(--text); }
+  .settlement-list li { background: #33304d; }
+  .btn-secondary { background: #26262e; }
+}
