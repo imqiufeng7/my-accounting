@@ -1,8 +1,7 @@
 from __future__ import annotations
-from datetime import date
 
 import config
-from ledger import storage
+from ledger import clock, storage
 
 
 def to_float(value, default=0.0) -> float:
@@ -144,4 +143,4 @@ def net_worth_summary() -> dict:
 
 
 def today_str() -> str:
-    return date.today().isoformat()
+    return clock.today_str()

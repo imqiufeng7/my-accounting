@@ -6,6 +6,9 @@ DATA_DIR = BASE_DIR / "data"
 
 BASE_CURRENCY = "TWD"
 
+# 「今天」的判定時區（表單預設日期、市價更新日期、分享連結建立日期都用它）
+TIMEZONE = os.environ.get("APP_TIMEZONE", "Asia/Taipei")
+
 APP_PASSWORD = os.environ.get("APP_PASSWORD", "changeme")
 FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "dev-secret-key-change-me")
 

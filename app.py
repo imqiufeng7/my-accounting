@@ -1,10 +1,9 @@
 from __future__ import annotations
-from datetime import date
 
 from flask import Flask, abort, redirect, render_template, request, session, url_for
 
 import config
-from ledger import aggregator, auth, preferences, settlement, storage
+from ledger import aggregator, auth, clock, preferences, settlement, storage
 
 app = Flask(__name__)
 app.secret_key = config.FLASK_SECRET_KEY
@@ -101,7 +100,7 @@ def mode_entries(mode):
         mode=mode,
         cfg=cfg,
         rows=rows,
-        today=date.today().isoformat(),
+        today=clock.today_str(),
         settings=settings,
         accounts=accounts,
     )
@@ -133,7 +132,7 @@ def mode_batch(mode):
         "batch_entries.html",
         mode=mode,
         cfg=cfg,
-        today=date.today().isoformat(),
+        today=clock.today_str(),
         settings=settings,
         accounts=accounts,
     )
@@ -160,7 +159,7 @@ def mode_edit(mode, row_id):
         rows=[],
         edit_row=row,
         accounts=accounts,
-        today=date.today().isoformat(),
+        today=clock.today_str(),
         settings=preferences.load_settings(),
     )
 
@@ -256,7 +255,7 @@ def stock():
     holdings = aggregator.stock_holdings()
     accounts = storage.read_rows(config.ACCOUNTS_FILE, config.ACCOUNTS_FIELDS)
     return render_template(
-        "stock.html", rows=rows, holdings=holdings, today=date.today().isoformat(), accounts=accounts
+        "stock.html", rows=rows, holdings=holdings, today=clock.today_str(), accounts=accounts
     )
 
 
@@ -274,7 +273,7 @@ def stock_edit(row_id):
 
     accounts = storage.read_rows(config.ACCOUNTS_FILE, config.ACCOUNTS_FIELDS)
     return render_template(
-        "stock.html", rows=[], edit_row=row, holdings={}, accounts=accounts, today=date.today().isoformat()
+        "stock.html", rows=[], edit_row=row, holdings={}, accounts=accounts, today=clock.today_str()
     )
 
 
@@ -298,7 +297,7 @@ def stock_prices():
                     "目前市價": request.form.get("目前市價", "").strip(),
                     "幣別": request.form.get("幣別", "").strip() or "TWD",
                     "匯率": request.form.get("匯率", "").strip() or "1",
-                    "更新日期": date.today().isoformat(),
+                    "更新日期": clock.today_str(),
                 },
             )
         return redirect(url_for("stock_prices"))
@@ -330,7 +329,7 @@ def accounts():
     _, details = aggregator.account_balances()
     balances_by_name = {d["name"]: d["balance_twd"] for d in details}
     return render_template(
-        "accounts.html", rows=rows, balances_by_name=balances_by_name, today=date.today().isoformat()
+        "accounts.html", rows=rows, balances_by_name=balances_by_name, today=clock.today_str()
     )
 
 

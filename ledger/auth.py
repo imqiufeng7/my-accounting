@@ -1,9 +1,8 @@
 from __future__ import annotations
 import secrets
-from datetime import date
 
 import config
-from ledger import storage
+from ledger import clock, storage
 
 PUBLIC_ENDPOINTS = {"login", "share_travel", "static"}
 
@@ -61,7 +60,7 @@ def get_or_create_share_token(destination: str) -> str:
         config.TRAVEL_SHARES_FIELDS,
         "token",
         token,
-        {"目的地": destination, "建立日期": date.today().isoformat()},
+        {"目的地": destination, "建立日期": clock.today_str()},
     )
     return token
 
