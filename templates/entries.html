@@ -17,6 +17,7 @@
 <section class="card">
   <h2>{{ "編輯紀錄" if is_edit else "新增一筆" }}</h2>
   <form method="post" action="{{ url_for('mode_edit', mode=mode, row_id=edit_row.id) if is_edit else url_for('mode_entries', mode=mode) }}" class="entry-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     {% if cfg.has_destination %}
     <label>目的地
       <input type="text" name="目的地" value="{{ values.get('目的地', '') }}" placeholder="例如：2026東京" required>
@@ -97,6 +98,7 @@
         <td class="row-actions">
           <a href="{{ url_for('mode_edit', mode=mode, row_id=row.id) }}">編輯</a>
           <form method="post" action="{{ url_for('mode_delete', mode=mode, row_id=row.id) }}" onsubmit="return confirm('確定刪除這筆紀錄？');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="link-button">刪除</button>
           </form>
         </td>

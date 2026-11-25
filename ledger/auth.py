@@ -7,6 +7,29 @@ from ledger import storage
 
 PUBLIC_ENDPOINTS = {"login", "share_travel", "static"}
 
+CSRF_SESSION_KEY = "_csrf_token"
+CSRF_FORM_FIELD = "csrf_token"
+
+
+def csrf_token() -> str:
+    """取得（必要時建立）存在 session 中的 CSRF token，供樣板放進隱藏欄位。"""
+    from flask import session
+
+    token = session.get(CSRF_SESSION_KEY)
+    if not token:
+        token = secrets.token_urlsafe(32)
+        session[CSRF_SESSION_KEY] = token
+    return token
+
+
+def csrf_is_valid(submitted: str | None) -> bool:
+    from flask import session
+
+    expected = session.get(CSRF_SESSION_KEY)
+    if not expected or not submitted:
+        return False
+    return secrets.compare_digest(submitted.encode("utf-8"), expected.encode("utf-8"))
+
 
 def check_password(password: str) -> bool:
     # compare_digest 遇到非 ASCII 的 str 會丟 TypeError，先轉成 UTF-8 位元組再比對

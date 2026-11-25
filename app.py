@@ -8,6 +8,7 @@ from ledger import aggregator, auth, preferences, settlement, storage
 
 app = Flask(__name__)
 app.secret_key = config.FLASK_SECRET_KEY
+app.jinja_env.globals["csrf_token"] = auth.csrf_token
 
 EXPENSE_MODES = ("personal", "work", "travel")
 
@@ -15,6 +16,16 @@ EXPENSE_MODES = ("personal", "work", "travel")
 # ---------------------------------------------------------------------------
 # Auth
 # ---------------------------------------------------------------------------
+
+@app.before_request
+def verify_csrf():
+    """所有會改資料的 POST 都必須帶正確的 CSRF token，防止跨站偽造請求（例如惡意網站偷偷刪帳）。"""
+    if request.method != "POST":
+        return None
+    if not auth.csrf_is_valid(request.form.get(auth.CSRF_FORM_FIELD)):
+        abort(400, description="表單已過期或來源不明，請重新整理頁面後再送出。")
+    return None
+
 
 @app.before_request
 def require_login():

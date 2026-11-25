@@ -9,6 +9,7 @@
 
 <section class="card">
   <form method="post" action="{{ url_for('mode_batch', mode=mode) }}" class="entry-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     {% if cfg.has_destination %}
     <label>目的地
       <input type="text" name="目的地" placeholder="例如：2026東京" required>

@@ -5,6 +5,7 @@
   <h1>記帳系統</h1>
   {% if error %}<p class="error">{{ error }}</p>{% endif %}
   <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <label>密碼
       <input type="password" name="password" autofocus required>
     </label>

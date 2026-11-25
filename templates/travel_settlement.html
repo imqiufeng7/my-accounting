@@ -52,6 +52,7 @@
   <h2>分享給同行朋友</h2>
   <p class="hint">產生一個不需登入密碼的連結，朋友點開即可看到即時（非凍結快照）的分帳結果。</p>
   <form method="post" action="{{ url_for('travel_settlement') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <input type="hidden" name="action" value="share">
     <input type="hidden" name="目的地" value="{{ destination }}">
     <button type="submit" class="btn">產生／取得分享連結</button>

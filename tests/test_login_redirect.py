@@ -3,7 +3,8 @@ from tests.support import AppTestCase
 
 class LoginRedirectTests(AppTestCase):
     def _login_with_next(self, next_value):
-        return self.client.post(
+        self.set_csrf()
+        return self.post(
             "/login",
             query_string={"next": next_value},
             data={"password": "test-password"},
@@ -23,6 +24,7 @@ class LoginRedirectTests(AppTestCase):
                 self.assertEqual(resp.headers["Location"], "/")
 
     def test_wrong_password_does_not_log_in(self):
-        resp = self.client.post("/login", data={"password": "nope"})
+        self.set_csrf()
+        resp = self.post("/login", data={"password": "nope"})
         self.assertEqual(resp.status_code, 200)
         self.assertIn("密碼錯誤", resp.get_data(as_text=True))

@@ -21,6 +21,7 @@
       <a href="{{ url_for('settings_view') }}">設定</a>
     </nav>
     <form action="{{ url_for('logout') }}" method="post" class="logout-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <button type="submit" class="link-button">登出</button>
     </form>
   </div>

@@ -7,6 +7,7 @@
 <section class="card">
   <h2>新增／更新帳戶</h2>
   <form method="post" action="{{ url_for('accounts') }}" class="entry-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <label>帳戶名稱
       <input type="text" name="帳戶名稱" required>
     </label>
@@ -53,6 +54,7 @@
         <td>{{ row['備註'] }}</td>
         <td class="row-actions">
           <form method="post" action="{{ url_for('account_delete', name=row['帳戶名稱']) }}" onsubmit="return confirm('確定刪除這個帳戶？');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="link-button">刪除</button>
           </form>
         </td>

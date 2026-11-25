@@ -6,6 +6,7 @@
 
 <section class="card">
   <form method="post" action="{{ url_for('settings_view') }}" class="entry-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <label>預設付款人
       <input type="text" name="預設付款人" value="{{ settings.get('預設付款人', '') }}">
     </label>

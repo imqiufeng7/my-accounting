@@ -55,6 +55,19 @@ class AppTestCase(TempDataTestCase):
         self.app = app
         self.client = app.test_client()
 
+    CSRF = "test-csrf-token"
+
     def login(self):
         with self.client.session_transaction() as sess:
             sess["logged_in"] = True
+            sess["_csrf_token"] = self.CSRF
+
+    def set_csrf(self):
+        with self.client.session_transaction() as sess:
+            sess["_csrf_token"] = self.CSRF
+
+    def post(self, url, data=None, **kwargs):
+        """帶上 CSRF token 的 POST。"""
+        data = dict(data or {})
+        data.setdefault("csrf_token", self.CSRF)
+        return self.client.post(url, data=data, **kwargs)

@@ -9,6 +9,7 @@
 <section class="card">
   <h2>{{ "編輯交易" if is_edit else "新增買賣交易" }}</h2>
   <form method="post" action="{{ url_for('stock_edit', row_id=edit_row.id) if is_edit else url_for('stock') }}" class="entry-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <label>日期
       <input type="date" name="日期" value="{{ values.get('日期') or today }}" required>
     </label>
@@ -86,6 +87,7 @@
         <td class="row-actions">
           <a href="{{ url_for('stock_edit', row_id=row.id) }}">編輯</a>
           <form method="post" action="{{ url_for('stock_delete', row_id=row.id) }}" onsubmit="return confirm('確定刪除這筆交易？');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="link-button">刪除</button>
           </form>
         </td>
