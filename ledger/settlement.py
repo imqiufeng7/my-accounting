@@ -1,4 +1,18 @@
 from __future__ import annotations
+import math
+
+
+def _parse_weight(text: str) -> float:
+    """權重必須是有限且非負的數字；寫錯（如 "abc"、"nan"、"-2"）時視為 1，避免整頁 500。"""
+    try:
+        weight = float(text)
+    except (TypeError, ValueError):
+        return 1.0
+    if not math.isfinite(weight) or weight < 0:
+        return 1.0
+    return weight
+
+
 def parse_shares(shares_text: str, amount: float, payer: str) -> dict[str, float]:
     """Parse the 分攤對象 mini-syntax into {person: owed_amount}.
 
@@ -15,7 +29,7 @@ def parse_shares(shares_text: str, amount: float, payer: str) -> dict[str, float
     for entry in entries:
         if ":" in entry:
             name, weight = entry.split(":", 1)
-            weights[name.strip()] = weights.get(name.strip(), 0) + float(weight)
+            weights[name.strip()] = weights.get(name.strip(), 0) + _parse_weight(weight)
         else:
             weights[entry] = weights.get(entry, 0) + 1
 

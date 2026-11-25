@@ -31,3 +31,18 @@ class ParseSharesRoundingTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ParseSharesInvalidWeightTests(unittest.TestCase):
+    def test_non_numeric_weight_falls_back_to_one(self):
+        # 原本 float("abc") 會丟 ValueError，讓結算頁與公開分享頁 500
+        self.assertEqual(settlement.parse_shares("A:abc,B", 100, "A"), {"A": 50.0, "B": 50.0})
+
+    def test_non_finite_or_negative_weight_falls_back_to_one(self):
+        for bad in ("nan", "inf", "-2", ""):
+            with self.subTest(weight=bad):
+                shares = settlement.parse_shares(f"A:{bad},B:1", 10, "A")
+                self.assertEqual(shares, {"A": 5.0, "B": 5.0})
+
+    def test_zero_weight_is_still_allowed(self):
+        self.assertEqual(settlement.parse_shares("A:0,B:1", 10, "A"), {"A": 0.0, "B": 10.0})
