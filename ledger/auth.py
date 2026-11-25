@@ -9,7 +9,8 @@ PUBLIC_ENDPOINTS = {"login", "share_travel", "static"}
 
 
 def check_password(password: str) -> bool:
-    return secrets.compare_digest(password, config.APP_PASSWORD)
+    # compare_digest 遇到非 ASCII 的 str 會丟 TypeError，先轉成 UTF-8 位元組再比對
+    return secrets.compare_digest(password.encode("utf-8"), config.APP_PASSWORD.encode("utf-8"))
 
 
 def safe_next_url(target: str | None) -> str | None:
