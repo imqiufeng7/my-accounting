@@ -30,7 +30,7 @@ def login():
     if request.method == "POST":
         if auth.check_password(request.form.get("password", "")):
             session["logged_in"] = True
-            return redirect(request.args.get("next") or url_for("dashboard"))
+            return redirect(auth.safe_next_url(request.args.get("next")) or url_for("dashboard"))
         error = "密碼錯誤"
     return render_template("login.html", error=error)
 
