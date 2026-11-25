@@ -333,7 +333,8 @@ def accounts():
     )
 
 
-@app.route("/accounts/<name>/delete", methods=["POST"])
+# 用 path 轉換器：帳戶名稱可能含「/」（例如「台新/信用卡」），預設的字串轉換器會比對不到
+@app.route("/accounts/<path:name>/delete", methods=["POST"])
 def account_delete(name):
     storage.delete_keyed_row(config.ACCOUNTS_FILE, config.ACCOUNTS_FIELDS, "帳戶名稱", name)
     return redirect(url_for("accounts"))
