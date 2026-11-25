@@ -7,3 +7,7 @@ venv/
 # Personal financial data — never commit real records.
 data/*.csv
 data/*.json
+
+# 寫入鎖與原子寫入暫存檔
+data/.*.lock
+data/.*.tmp
