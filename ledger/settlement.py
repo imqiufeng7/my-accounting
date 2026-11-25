@@ -23,15 +23,16 @@ def parse_shares(shares_text: str, amount: float, payer: str) -> dict[str, float
     if total_weight <= 0:
         return {payer: amount}
 
-    shares = {name: amount * weight / total_weight for name, weight in weights.items()}
+    # 以「分」為單位的整數分配：先各自四捨五入，再把差額補給最後一人，
+    # 確保分攤合計恰好等於金額（原本先算差額再四捨五入，100 元三人分會變 99.99）。
+    total_cents = round(amount * 100)
+    cents = {name: round(total_cents * weight / total_weight) for name, weight in weights.items()}
+    diff = total_cents - sum(cents.values())
+    if diff:
+        last_person = list(cents.keys())[-1]
+        cents[last_person] += diff
 
-    # Fix up rounding so the shares sum exactly to `amount`.
-    diff = round(amount - sum(shares.values()), 2)
-    if diff and shares:
-        last_person = list(shares.keys())[-1]
-        shares[last_person] = round(shares[last_person] + diff, 2)
-
-    return {name: round(v, 2) for name, v in shares.items()}
+    return {name: c / 100 for name, c in cents.items()}
 
 
 def compute_balances(entries: list[dict]) -> dict[str, float]:
