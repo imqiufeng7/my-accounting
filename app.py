@@ -76,9 +76,10 @@ def _mode_or_404(mode: str) -> dict:
     return config.MODE_CONFIG[mode]
 
 
-def _form_to_row(cfg: dict, form) -> dict:
-    row = {field: form.get(field, "").strip() for field in cfg["fields"] if field != "id"}
-    if not row.get("匯率"):
+def _form_to_row(fields: list[str], form) -> dict:
+    """把表單轉成一列資料（排除 id、去除空白、匯率留空時預設為 1），記帳與股票共用。"""
+    row = {field: form.get(field, "").strip() for field in fields if field != "id"}
+    if "匯率" in fields and not row.get("匯率"):
         row["匯率"] = "1"
     return row
 
@@ -87,7 +88,7 @@ def _form_to_row(cfg: dict, form) -> dict:
 def mode_entries(mode):
     cfg = _mode_or_404(mode)
     if request.method == "POST":
-        row = _form_to_row(cfg, request.form)
+        row = _form_to_row(cfg["fields"], request.form)
         storage.append_row(cfg["file"], cfg["fields"], row)
         return redirect(url_for("mode_entries", mode=mode))
 
@@ -110,9 +111,7 @@ def mode_entries(mode):
 def mode_batch(mode):
     cfg = _mode_or_404(mode)
     if request.method == "POST":
-        header = {field: request.form.get(field, "").strip() for field in cfg["fields"] if field != "id"}
-        if not header.get("匯率"):
-            header["匯率"] = "1"
+        header = _form_to_row(cfg["fields"], request.form)
 
         items = request.form.getlist("項目[]")
         amounts = request.form.getlist("金額[]")
@@ -147,7 +146,7 @@ def mode_edit(mode, row_id):
         abort(404)
 
     if request.method == "POST":
-        updates = _form_to_row(cfg, request.form)
+        updates = _form_to_row(cfg["fields"], request.form)
         storage.update_row(cfg["file"], cfg["fields"], row_id, updates)
         return redirect(url_for("mode_entries", mode=mode))
 
@@ -244,9 +243,7 @@ def share_travel(token):
 @app.route("/stock", methods=["GET", "POST"])
 def stock():
     if request.method == "POST":
-        row = {field: request.form.get(field, "").strip() for field in config.STOCK_FIELDS if field != "id"}
-        if not row.get("匯率"):
-            row["匯率"] = "1"
+        row = _form_to_row(config.STOCK_FIELDS, request.form)
         storage.append_row(config.STOCK_FILE, config.STOCK_FIELDS, row)
         return redirect(url_for("stock"))
 
@@ -267,7 +264,7 @@ def stock_edit(row_id):
         abort(404)
 
     if request.method == "POST":
-        updates = {field: request.form.get(field, "").strip() for field in config.STOCK_FIELDS if field != "id"}
+        updates = _form_to_row(config.STOCK_FIELDS, request.form)
         storage.update_row(config.STOCK_FILE, config.STOCK_FIELDS, row_id, updates)
         return redirect(url_for("stock"))
 
